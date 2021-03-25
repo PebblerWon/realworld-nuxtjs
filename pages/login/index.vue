@@ -11,7 +11,12 @@
         </p>
 
         <ul class="error-messages">
-          <li>That email is already taken</li>
+          <template v-for="(messages, field) in errors">
+
+            <li v-for="(errMsg, index) in messages" :key="index">
+              {{field}} {{errMsg}}
+            </li>
+          </template>
         </ul>
 
         <form @submit.prevent="onSubmit">
@@ -35,10 +40,12 @@
 </div>
 </template>
 <script>
-import request from '../../utils/request';
+import {login, register} from '@/api/users';
+const Cookie = process.client ? require('js-cookie') : undefined;
 
 export default {
   name: 'login',
+  middleware:'notauth',
   components: {},
   props: {},
   data () {
@@ -46,7 +53,8 @@ export default {
       user:{
         email:'',
         password: '',
-      }
+      },
+      errors:{}
     }
   },
   computed:{
@@ -56,16 +64,15 @@ export default {
   },
   methods:{
     async onSubmit() {
-      console.log(111)
       try {
-        const data = await request({
-          method: 'POST',
-          url: '/api/users/login',
-          data: this.user
-        })
-        console.log(data)
+        const url = this.isLogin ? login : register;
+        const {data} = await url({user:this.user});
+        console.log(data);
+        this.$store.commit('setUser', data.user)
+        Cookie.set('user', data.user)
+        this.$router.push('/')
       } catch(e) {
-
+        this.errors = e.response.data.errors;
       }
     }
   }
