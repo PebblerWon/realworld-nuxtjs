@@ -6,38 +6,46 @@
       {
         "path": "",
         "name": "home",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/home"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/home",
+        "_name": "_0abc7bde"
       },
       {
         "path": "/login",
         "name": "login",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/login"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/login",
+        "_name": "_4d0b484a"
       },
       {
         "path": "/register",
         "name": "register",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/login"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/login",
+        "_name": "_4d0b484a"
       },
       {
         "path": "/profile/:username",
         "name": "profile",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/profile"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/profile",
+        "_name": "_10812e4a"
       },
       {
         "path": "/setting",
         "name": "setting",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/setting"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/setting",
+        "_name": "_cd5c9a1e"
       },
       {
         "path": "/editor",
         "name": "editor",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/editor"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/editor",
+        "_name": "_47d1e4ac"
       },
       {
         "path": "/article/:slug",
         "name": "article",
-        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/article"
+        "component": "/Users/wanghaonan29/Desktop/whn/my-class/front-end-note/03-03/realworld-nuxtjs/pages/article",
+        "_name": "_11691cd2"
       }
-    ]
+    ],
+    "_name": "_53a0be69"
   }
 ]

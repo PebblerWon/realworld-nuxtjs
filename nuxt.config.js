@@ -1,6 +1,6 @@
 module.exports = {
 	router: {
-		linkActiveClass:'active',
+		// linkActiveClass:'active',
 		extendRoutes(routes, resolve) {
 			routes.splice(0);
 			routes.push({
