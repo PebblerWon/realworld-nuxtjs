@@ -30,13 +30,13 @@
             <li class="nav-item">
               <nuxt-link
                 class="nav-link"
-                to="/settings"
+                to="/setting"
               >
                 <i class="ion-gear-a"></i>&nbsp;Settings
               </nuxt-link>
             </li>
             <li class="nav-item">
-              <nuxt-link class="nav-link" to="/profile/123">
+              <nuxt-link class="nav-link" :to="`/profile/${user.username}`">
                 <img
                   class="user-pic"
                   :src="user.image"
@@ -87,13 +87,14 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapState } from 'vuex';
 
 export default {
   name: 'LayoutIndex',
   computed: {
     ...mapState(['user'])
-  }
+  },
+  
 }
 </script>
 

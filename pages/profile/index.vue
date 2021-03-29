@@ -11,7 +11,10 @@
             {{profile.bio}}
           </p>
           <button 
-            class="btn btn-sm btn-outline-secondary action-btn">
+            class="btn btn-sm btn-outline-secondary action-btn"
+            @click="onFlowClick"
+            v-if="!isMe"
+          >
             <i class="ion-plus-round"></i>
              {{profile.following?'followed': `Follow ${profile.username}`}}
           </button>
@@ -23,77 +26,127 @@
 
   <div class="container">
     <div class="row">
-
       <div class="col-xs-12 col-md-10 offset-md-1">
         <div class="articles-toggle">
           <ul class="nav nav-pills outline-active">
             <li class="nav-item">
-              <a class="nav-link active" href="">My Articles</a>
+              <nuxt-link 
+                class="nav-link" 
+                :class="{
+                  active: tab==='my'
+                }" 
+                :to="{
+                  name:'profile',
+                  params:{
+                    username,
+                  },
+                  query:{
+                    page:1,
+                    tab:'my'
+                  }
+                }"
+              >My Articles</nuxt-link>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="">Favorited Articles</a>
+              <nuxt-link 
+                class="nav-link" 
+                :class="{
+                  active: tab==='fav'
+                }"
+                :to="{
+                  name:'profile',
+                  params:{
+                    username,
+                  },
+                  query:{
+                    page:1,
+                    tab:'fav'
+                  }
+                }"
+              >Favorited Articles</nuxt-link>
             </li>
           </ul>
         </div>
 
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Eric Simons</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 29
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>How to build webapps that scale</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-          </a>
-        </div>
-
-        <div class="article-preview">
-          <div class="article-meta">
-            <a href=""><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-            <div class="info">
-              <a href="" class="author">Albert Pai</a>
-              <span class="date">January 20th</span>
-            </div>
-            <button class="btn btn-outline-primary btn-sm pull-xs-right">
-              <i class="ion-heart"></i> 32
-            </button>
-          </div>
-          <a href="" class="preview-link">
-            <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-            <p>This is the description for the post.</p>
-            <span>Read more...</span>
-            <ul class="tag-list">
-              <li class="tag-default tag-pill tag-outline">Music</li>
-              <li class="tag-default tag-pill tag-outline">Song</li>
-            </ul>
-          </a>
-        </div>
-
-
+        <articles-list 
+          v-bind:articles="articles"
+          v-bind:articlesCount="articlesCount"
+          v-bind:pageClick="pageClick"
+          v-bind:limit="limit"
+          v-bind:page="page"
+        ></articles-list> 
       </div>
-
     </div>
   </div>
 
 </div>
 </template>
 <script>
-import {getProfile} from '@/api/profiles.js'
+import {getProfile,follow,unFollow} from '@/api/profiles'
+import {getArticles} from '@/api/article'
+
+import ArticlesList from '@/components/articles-list';
+
 export default {
   name: 'profile',
-  async asyncData ({params}) {
-    console.log(params)
-    const {data} = await getProfile(params.username)
-    return {
-      profile: data.profile
+  components:{
+    ArticlesList
+  },
+  computed:{
+    totalPage() {
+      return Math.ceil(this.articlesCount / this.limit);
     }
   },
+  data() {
+    return {
+      limit:20,
+      articles:[],
+      articlesCount:0,
+    }
+  },
+  methods:{
+    async getArticles () {
+      const param = {limit:this.limit};
+      if(this.tab === 'my') {
+        param.author = this.username;
+      }else if(this.tab === 'fav') {
+        param.favorited = this.username;
+      }
+      const {data} = await getArticles(param)
+      this.articles = data.articles;
+      this.articlesCount = data.articlesCount;
+    },
+    pageClick(page) {
+      console.log(page)
+    },
+    async onFlowClick() {
+      let res;
+      if(!this.profile.following) {
+        res = await follow(this.username);
+      }else {
+        res = await unFollow(this.username);
+      }
+      this.profile = res.data.profile;
+    },
+  },
+  async mounted() {
+    this.getArticles();
+  },
+  async asyncData ({params,query,store}) {
+    const {data} = await getProfile(params.username);
+    return {
+      tab:query.tab||'my',
+      page: parseInt(query.page,10) || 1,
+      profile: data.profile,
+      username: params.username,
+      isMe:params.username === store?.state?.user?.username
+    }
+  },
+  watchQuery:['page','tab'],
+  watch:{
+    tab: function() {
+      this.getArticles();
+    },
+  }
 }
 </script>

@@ -61,3 +61,24 @@ export const addComment = (params) => {
     }
   })
 }
+
+export const createArticle = (params) => {
+  return request({
+    method: 'POST',
+    url: `/api/articles`,
+    data: params,
+  })
+}
+export const updateArticle = (params) => {
+  return request({
+    method: 'PUT',
+    url: `/api/articles/${params.slug}`,
+    data:{ article:params.article},
+  })
+}
+export const delArticle = (slug) => {
+  return request({
+    method: 'DELETE',
+    url: `/api/articles/${slug}`
+  })
+}

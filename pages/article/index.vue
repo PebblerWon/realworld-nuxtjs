@@ -22,6 +22,7 @@
         <button 
           class="btn btn-sm btn-outline-secondary"
           :class="{active: article.author.following}"
+          v-if="!myArticle"
         >
           <i class="ion-plus-round"></i>
           &nbsp;
@@ -31,9 +32,26 @@
           class="btn btn-sm btn-outline-primary"
           :class="{active: article.favorited}"
           @click="onLikeClick(article)"
+          v-if="!myArticle"
         >
           <i class="ion-heart"></i>
           {{article.favorited ? 'unFavorite':'Favorite'}} Post <span class="counter">({{article.favoritesCount}})</span>
+        </button>
+        <button 
+          class="btn btn-outline-secondary btn-sm"
+          @click="onEdit(article)"
+          v-if="myArticle"
+        >
+          <i class="ion-edit"></i>
+          &nbsp;Edit Article
+        </button>
+        <button 
+          class="btn btn-outline-danger btn-sm"
+          @click="onDel(article)"
+          v-if="myArticle"
+        >
+          <i class="ion-trash-a"></i>
+          &nbsp;Del Article
         </button>
       </div>
 
@@ -62,7 +80,8 @@
 </div>
 </template>
 <script>
-import {getArticleDetail,likeArticle, unLikeArticle} from '@/api/article';
+import {getArticleDetail,likeArticle, unLikeArticle, delArticle} from '@/api/article';
+import {follow,unFollow} from '@/api/profiles';
 import ArticleComments from './components/article-comments'
 
 export default {
@@ -70,11 +89,12 @@ export default {
   components:{
     ArticleComments,
   },
-  async asyncData({params}) {
+  async asyncData({params,store}) {
     const {data} = await getArticleDetail(params.slug);
     const {article} = data;
     return {
-      article
+      article,
+      myArticle: article.author.username === store.state.user.username
     }
   },
   methods:{
@@ -93,13 +113,25 @@ export default {
       if(article.favorited) {
         article.favorited = false;
         article.favoritesCount += -1;
-        await unLikeArticle(article.slug);
+        await follow(article.author.username);
       }else {
         article.favorited = true;
         article.favoritesCount += 1;
-        await likeArticle(article.slug);
+        await unFollow(article.author.username);
       }
     },
+    onEdit(article) {
+      this.$router.push({
+        name:'editor',
+        params:{
+          slug:article.slug,
+        }
+      })
+    },
+    async onDel(article) {
+      const res = await delArticle(article.slug);
+      this.$router.push({name:'home'})
+    }
   }
 }
 </script>

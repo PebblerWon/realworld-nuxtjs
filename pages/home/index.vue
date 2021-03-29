@@ -55,30 +55,13 @@
             </li>
           </ul>
         </div>
-
-        <template v-for="article in articles" >
-          <div class="article-preview" :key="article.slug">
-            <div class="article-meta">
-              <a href="profile.html"><img :src="article.author.image" /></a>
-              <div class="info">
-                <a href="" class="author">{{article.author.username}}</a>
-                <span class="date">{{article.createdAt | date()}}</span>
-              </div>
-              <button 
-                class="btn btn-outline-primary btn-sm pull-xs-right"
-                :class="{active: article.favorited}"
-                @click="onLikeClick(article)"
-              >
-                <i class="ion-heart"></i> {{article.favoritesCount}}
-              </button>
-            </div>
-            <nuxt-link :to="{name:'article',params:{slug:article.slug}}" class="preview-link">
-              <h1>{{ article.title }}</h1>
-              <p>{{ article.description }}</p>
-              <span>Read more...</span>
-            </nuxt-link>
-          </div>
-        </template>
+        <articles-list 
+          v-bind:articles="articles"
+          v-bind:articlesCount="articlesCount"
+          v-bind:pageClick="pageClick"
+          v-bind:limit="limit"
+          v-bind:page="page"
+        ></articles-list>
       </div>
 
       <div class="col-md-3">
@@ -92,42 +75,21 @@
           </div>
         </div>
       </div>
-
-      <nav>
-        <ul class="pagination">
-          <li
-            class="page-item"
-            :class="{active: item == page}"
-            v-for="item in totalPage"
-            :key="item"
-          >
-            <nuxt-link
-              class="page-link"
-              :to="{
-                name:'home',
-                query:{
-                  page:item,
-                  tag,
-                  tab,
-                }
-              }"
-            >
-              {{item}}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
     </div>
   </div>
 
 </div>
 </template>
 <script>
-import {getArticles, getFeedArticles, getTags, likeArticle, unLikeArticle} from '@/api/article';
+import {getArticles, getFeedArticles, getTags} from '@/api/article';
 import {mapState} from 'vuex';
+import ArticlesList from '@/components/articles-list';
 
 export default {
   name: 'home',
+  components:{
+    ArticlesList
+  },
   computed:{
     ...mapState(['user']),
     totalPage() {
@@ -163,16 +125,15 @@ export default {
     }
   },
   methods:{
-    async onLikeClick(article) {
-      if(article.favorited) {
-        article.favorited = false;
-        article.favoritesCount += -1;
-        await unLikeArticle(article.slug);
-      }else {
-        article.favorited = true;
-        article.favoritesCount += 1;
-        await likeArticle(article.slug);
-      }
+    pageClick(page) {
+      this.$router.push({
+        name:'home',
+        query:{
+          page,
+          tag:this.tag,
+          tab:this.tab,
+        }
+      })
     }
   }
 }
